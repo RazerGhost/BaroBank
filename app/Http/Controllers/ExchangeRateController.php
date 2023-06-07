@@ -7,9 +7,10 @@ use App\Models\ExchangeRate;
 
 class ExchangeRateController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $exchangeRates = ExchangeRate::all();
+        $perPage = $request->input('perPage', 25);
+        $exchangeRates = ExchangeRate::paginate($perPage);
         return view('exchangerates.index', compact('exchangeRates'));
     }
 }
