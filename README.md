@@ -14,6 +14,18 @@ To recreate this Laravel repository, you can follow these general steps:
     
     -   **Configuration:** Laravel requires certain configuration settings to work correctly. Ensure you have a `.env` file in the project directory that contains the necessary environment variables. 
     -   If the repository doesn't include an `.env` file, look for a `.env.example` file and rename it to `.env`, then update the values accordingly.
+    -   replace this inside the .env under DB_CONNECTION
+    
+    ```bash
+    
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=barodb
+    DB_USERNAME=root
+    DB_PASSWORD=
+    
+    ```
     
     -   **Generate Application Key:** Laravel requires an application key for encryption and other security purposes. Generate a new key by running the following command:
     
