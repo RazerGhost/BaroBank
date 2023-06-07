@@ -39,6 +39,8 @@ To recreate this Laravel repository, you can follow these general steps:
     ```bash
 
     php artisan migrate
+    npm install
+    npm run dev
     
     ```
     
