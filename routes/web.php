@@ -30,9 +30,4 @@ Route::middleware('auth')->group(function () {
     Route::get('/exchangerates/index', [ExchangeRateController::class, 'index'])->name('exchangerates.index');
 });
 
-Route::get('/exchangerates/index', function () {
-    return view('exchangerates.index');
-})->middleware(['auth', 'verified'])->name('exchangerates.index');
-
-
 require __DIR__.'/auth.php';

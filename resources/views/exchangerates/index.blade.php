@@ -10,22 +10,22 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <h1 class="text-3xl font-bold">Welcome to your Table Page</h1>
-                    <table>
-                        <thead>
+                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
-                            <th>Currency From</th>
-                            <th>Currency To</th>
-                            <th>Rate</th>
-                            <th>Date</th>
+                            <th scope="col" class="px-6 py-3">Currency From</th>
+                            <th scope="col" class="px-6 py-3">Currency To</th>
+                            <th scope="col" class="px-6 py-3">Rate</th>
+                            <th scope="col" class="px-6 py-3">Date</th>
                         </tr>
                         </thead>
                         <tbody>
                         @foreach($exchangeRates as $exchangeRate)
-                            <tr>
-                                <td>{{ $exchangeRate->currency_from }}</td>
-                                <td>{{ $exchangeRate->currency_to }}</td>
-                                <td>{{ $exchangeRate->rate }}</td>
-                                <td>{{ $exchangeRate->datetime }}</td>
+                            <tr class="odd:bg-gray-900 even:bg-gray-600-">
+                                <td class="px-6 py-4">{{ $exchangeRate->currency_from }}</td>
+                                <td class="px-6 py-4">{{ $exchangeRate->currency_to }}</td>
+                                <td class="px-6 py-4">{{ $exchangeRate->rate }}</td>
+                                <td class="px-6 py-4">{{ $exchangeRate->datetime }}</td>
                             </tr>
                         @endforeach
                         </tbody>

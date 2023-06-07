@@ -10,6 +10,6 @@ class ExchangeRateController extends Controller
     public function index()
     {
         $exchangeRates = ExchangeRate::all();
-        return view('exchangerates.table', compact('exchangeRates'));
+        return view('exchangerates.index', compact('exchangeRates'));
     }
 }
