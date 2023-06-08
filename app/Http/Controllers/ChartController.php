@@ -9,31 +9,37 @@ class ChartController extends Controller
 {
     public function index(Request $request)
     {
-        $selectedCurrenciesFrom = $request->input('currencies_from', []);
-        $selectedCurrenciesTo = $request->input('currencies_to', []);
-
         $query = DB::table('exchange_rates');
 
-        if (!empty($selectedCurrenciesFrom)) {
-            $query->whereIn('currency_from', $selectedCurrenciesFrom);
+        // Apply filters for currency from and currency to
+        $currenciesFrom = $request->input('currenciesFrom');
+        $currenciesTo = $request->input('currenciesTo');
+
+        if (is_array($currenciesFrom) && count($currenciesFrom) > 0) {
+            $query->whereIn('currency_from', $currenciesFrom);
         }
 
-        if (!empty($selectedCurrenciesTo)) {
-            $query->whereIn('currency_to', $selectedCurrenciesTo);
+        if (is_array($currenciesTo) && count($currenciesTo) > 0) {
+            $query->whereIn('currency_to', $currenciesTo);
         }
 
-        $exchangeChart = $query->orderBy('datetime')->get();
+        $exchangeChart = $query->orderBy('rate')->get();
 
-        $currencyData = [];
+        $currencyRateFrom = [];
+        $currencyRateTo = [];
+
         foreach ($exchangeChart as $row) {
-            $currencyPair = $row->currency_from . ' to ' . $row->currency_to;
-            $currencyData[$currencyPair][] = [
+            $currencyRateFrom[$row->currency_from][] = [
+                'datetime' => $row->datetime,
+                'rate' => $row->rate,
+            ];
+
+            $currencyRateTo[$row->currency_to][] = [
                 'datetime' => $row->datetime,
                 'rate' => $row->rate,
             ];
         }
 
-        return view('dashboard', compact('currencyData'));
+        return view('dashboard', compact('currencyRateFrom', 'currencyRateTo'));
     }
 }
-

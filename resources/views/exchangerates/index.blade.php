@@ -48,6 +48,10 @@
                                  <option value="10" {{ request('perPage') == 10 ? 'selected' : '' }} class="text-black">10</option>
                                 <option value="25" {{ request('perPage') == 25 ? 'selected' : '' }} class="text-black">25</option>
                                 <option value="50" {{ request('perPage') == 50 ? 'selected' : '' }} class="text-black">50</option>
+                                <option value="100" {{ request('perPage') == 100 ? 'selected' : '' }} class="text-black">100</option>
+                                <option value="200" {{ request('perPage') == 250 ? 'selected' : '' }} class="text-black">250</option>
+                                <option value="500" {{ request('perPage') == 500 ? 'selected' : '' }} class="text-black">500</option>
+                                <option value="1500" {{ request('perPage') == 1500 ? 'selected' : '' }} class="text-black">All</option>
                                 <!-- Add more options as per your requirement -->
                             </select>
                             <button type="button" id="applyPerPageButton" class="px-4 py-2 ml-2 bg-blue-500 text-white rounded">Apply</button>
