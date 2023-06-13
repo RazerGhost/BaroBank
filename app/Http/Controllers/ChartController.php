@@ -7,39 +7,64 @@ use Illuminate\Support\Facades\DB;
 
 class ChartController extends Controller
 {
-    public function index(Request $request)
+    public function chart(Request $request)
     {
+        // Retrieve the necessary input data
+        $selectedCurrencies1 = $request->input('currencies1', []);
+        $selectedCurrencies2 = $request->input('currencies2', []);
+
+        $selectedCurrencies3 = $request->input('currencies3', []);
+        $selectedCurrencies4 = $request->input('currencies4', []);
+
+        // Build the query
         $query = DB::table('exchange_rates');
 
-        // Apply filters for currency from and currency to
-        $currenciesFrom = $request->input('currenciesFrom');
-        $currenciesTo = $request->input('currenciesTo');
-
-        if (is_array($currenciesFrom) && count($currenciesFrom) > 0) {
-            $query->whereIn('currency_from', $currenciesFrom);
+        // Apply the filters based on the input data
+        if (!empty($selectedCurrencies1)) {
+            $query->whereIn('currency_from', $selectedCurrencies1);
+        }
+        if (!empty($selectedCurrencies2)) {
+            $query->whereIn('currency_to', $selectedCurrencies2);
         }
 
-        if (is_array($currenciesTo) && count($currenciesTo) > 0) {
-            $query->whereIn('currency_to', $currenciesTo);
+        if (!empty($selectedCurrencies3)) {
+            $query->whereIn('currency_from', $selectedCurrencies3);
+        }
+        if (!empty($selectedCurrencies4)) {
+            $query->whereIn('currency_to', $selectedCurrencies4);
         }
 
-        $exchangeChart = $query->orderBy('rate')->get();
+        // Retrieve the chart data
+        $exchangeChart = $query->orderBy('datetime')->get();
 
-        $currencyRateFrom = [];
-        $currencyRateTo = [];
+        // Process the chart data and pass it to the view
+        $selectedCurrencies1 = [];
+        $selectedCurrencies2 = [];
+        $selectedCurrencies3 = [];
+        $selectedCurrencies4 = [];
 
         foreach ($exchangeChart as $row) {
-            $currencyRateFrom[$row->currency_from][] = [
+            $selectedCurrencies1[$row->currency_from][] = [
                 'datetime' => $row->datetime,
                 'rate' => $row->rate,
             ];
-
-            $currencyRateTo[$row->currency_to][] = [
+            $selectedCurrencies2[$row->currency_to][] = [
                 'datetime' => $row->datetime,
                 'rate' => $row->rate,
             ];
         }
 
-        return view('dashboard', compact('currencyRateFrom', 'currencyRateTo'));
+        foreach ($exchangeChart as $row) {
+            $selectedCurrencies3[$row->currency_from][] = [
+                'datetime' => $row->datetime,
+                'rate' => $row->rate,
+            ];
+            $selectedCurrencies4[$row->currency_to][] = [
+                'datetime' => $row->datetime,
+                'rate' => $row->rate,
+            ];
+        }
+        // Pass the chart data to the view
+        return view('dashboard', compact('selectedCurrencies1', 'selectedCurrencies2', 'selectedCurrencies3', 'selectedCurrencies4'));
     }
 }

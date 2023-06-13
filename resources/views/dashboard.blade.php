@@ -8,159 +8,250 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <h1 class="text-3xl font-bold">Welcome to your dashboard</h1>
-
-                    <form action="{{ route('dashboard') }}" method="GET">
-                        <div class="flex items-center mt-4">
-                            <div>
-                                <label for="currenciesFrom">Currency From:</label>
-                                <input type="text" name="currenciesFrom[]" id="currenciesFrom"
-                                       value="{{ implode(',', request('currenciesFrom', [])) }}"
-                                       class="border-gray-300 rounded-md px-2 py-1 text-black">
-                            </div>
-
-                            <div class="ml-4">
-                                <label for="currenciesTo">Currency To:</label>
-                                <input type="text" name="currenciesTo[]" id="currenciesTo"
-                                       value="{{ implode(',', request('currenciesTo', [])) }}"
-                                       class="border-gray-300 rounded-md px-2 py-1 text-black">
-                            </div>
-
-                            <button type="submit"
-                                    class="ml-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Apply
-                            </button>
+                <form action="{{ route('dashboard') }}" method="GET" class="p-6">
+                    <div class="flex flex-auto flex-row justify-center text-center">
+                        <div>
+                            <label for="currencies1" class="mr-2 text-white font-medium">Currencies From:</label>
+                            <select name="currencies1[]" id="currencies1" multiple class="border-gray-300 rounded-md">
+                                <!-- Generate options for currency selection -->
+                                @foreach ($selectedCurrencies1 as $currency => $data)
+                                    <option class="text-black" value="{{ $currency }}" {{ in_array($currency, request('currencies1', [])) ? 'selected' : '' }}>
+                                        {{ $currency }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
-                        <div id="warning"></div>
-                    </form>
+                        <div>
+                            <label for="currencies2" class="mr-2 text-white font-medium">Currencies To:</label>
+                            <select name="currencies2[]" id="currencies2" multiple class="border-gray-300 rounded-md">
+                                <!-- Generate options for currency selection -->
+                                @foreach ($selectedCurrencies2 as $currency => $data)
+                                    <option value="{{ $currency }}" {{ in_array($currency, request('currencies2', [])) ? 'selected' : '' }}>
+                                        {{ $currency }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label for="currencies3" class="mr-2 text-white font-medium">Second Currencies From:</label>
+                            <select name="currencies3[]" id="currencies3" multiple class="border-gray-300 rounded-md">
+                                <!-- Generate options for currency selection -->
+                                @foreach ($selectedCurrencies3 as $currency => $data)
+                                    <option value="{{ $currency }}" {{ in_array($currency, request('currencies3', [])) ? 'selected' : '' }}>
+                                        {{ $currency }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label for="currencies4" class="mr-2 text-white font-medium">Second Currencies To:</label>
+                            <select name="currencies4[]" id="currencies4" multiple class="border-gray-300 rounded-md">
+                                <!-- Generate options for currency selection -->
+                                @foreach ($selectedCurrencies4 as $currency => $data)
+                                    <option value="{{ $currency }}" {{ in_array($currency, request('currencies4', [])) ? 'selected' : '' }}>
+                                        {{ $currency }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Apply
+                    </button>
+                </form>
+            </div>
 
-                    <script>
-                        var currenciesFromInput = document.getElementById('currenciesFrom');
-                        var currenciesToInput = document.getElementById('currenciesTo');
-                        var warningContainer = document.getElementById('warning');
 
-                        currenciesFromInput.addEventListener('input', validateCurrencies);
-                        currenciesToInput.addEventListener('input', validateCurrencies);
 
-                        function validateCurrencies() {
-                            var currenciesFrom = currenciesFromInput.value.split(',');
-                            var currenciesTo = currenciesToInput.value.split(',');
+            <div class="grid grid-cols-2 gap-8 mt-8">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <canvas id="myChart1" height="400"></canvas>
+                        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+                        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                        <script type="text/javascript">
+                            var currencyData1 = <?php echo json_encode($selectedCurrencies1); ?>;
+                            var currencyData2 = <?php echo json_encode($selectedCurrencies2); ?>;
+                            var datasets1 = [];
 
-                            var invalidCurrencies = currenciesFrom.concat(currenciesTo).filter(function (currency) {
-                                return currency.trim() !== '' && !currencyExists(currency);
-                            });
+                            for (var currency in currencyData1) {
+                                var data = currencyData1[currency];
+                                var rates = data.map(function (item) {
+                                    return item.rate;
+                                });
+                                var labels = data.map(function (item) {
+                                    return item.datetime;
+                                });
 
-                            if (invalidCurrencies.length > 0) {
-                                warningContainer.textContent = 'Invalid currencies: ' + invalidCurrencies.join(', ');
-                                warningContainer.style.color = 'red';
-                            } else {
-                                warningContainer.textContent = '';
+                                datasets1.push({
+                                    label: currency,
+                                    backgroundColor: 'rgb(255, 99, 132)',
+                                    borderColor: 'rgb(255, 99, 132)',
+                                    data: rates
+                                });
                             }
-                        }
 
-                        function currencyExists(currency) {
-                            var currencyRateFrom = <?php echo json_encode(array_keys($currencyRateFrom)); ?>;
-                            var currencyRateTo = <?php echo json_encode(array_keys($currencyRateTo)); ?>;
-                            return currencyRateFrom.includes(currency) || currencyRateTo.includes(currency);
-                        }
-                    </script>
+                            for (var currency in currencyData2) {
+                                var data = currencyData2[currency];
+                                var rates = data.map(function (item) {
+                                    return item.rate;
+                                });
+                                var labels = data.map(function (item) {
+                                    return item.datetime;
+                                });
 
-                    <canvas id="myChart" height="400"></canvas>
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                    <script type="text/javascript">
-                        var currencyRateFrom = <?php echo json_encode($currencyRateFrom); ?>;
-                        var currencyRateTo = <?php echo json_encode($currencyRateTo); ?>;
-                        var datasetsFrom = [];
-                        var datasetsTo = [];
+                                datasets1.push({
+                                    label: currency,
+                                    backgroundColor: 'rgb(54, 99, 132)',
+                                    borderColor: 'rgb(54, 99, 132)',
+                                    data: rates
+                                });
+                            }
 
-                        for (var currency in currencyRateFrom) {
-                            var data = currencyRateFrom[currency];
-                            var rates = data.map(function (item) {
-                                return item.rate;
-                            });
-                            var labels = data.map(function (item) {
-                                return item.datetime;
-                            });
-
-                            datasetsFrom.push({
-                                label: currency,
-                                backgroundColor: 'rgba(255, 99, 132, 50)',
-                                borderColor: 'rgba(255, 99, 132, 50)',
-                                data: rates
-                            });
-                        }
-
-                        for (var currency in currencyRateTo) {
-                            var data = currencyRateTo[currency];
-                            var rates = data.map(function (item) {
-                                return item.rate;
-                            });
-                            var labels = data.map(function (item) {
-                                return item.datetime;
-                            });
-
-                            datasetsTo.push({
-                                label: currency,
-                                backgroundColor: 'rgba(54, 162, 235, 50)',
-                                borderColor: 'rgba(54, 162, 235, 50)',
-                                data: rates
-                            });
-                        }
-
-                        var config = {
-                            type: 'line',
-                            data: {
-                                labels: labels,
-                                datasets: [
-                                    ...datasetsFrom,
-                                    ...datasetsTo
-                                ]
-                            },
-                            options: {
-                                responsive: true,
-                                interaction: {
-                                    mode: 'index',
-                                    intersect: false
+                            var config1 = {
+                                type: 'line',
+                                data: {
+                                    labels: labels,
+                                    datasets: datasets1
                                 },
-                                scales: {
-                                    x: {
-                                        display: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Dates'
-                                        }
-                                    },
-                                    y: {
-                                        display: true,
-                                        title: {
-                                            display: true,
-                                            text: 'Exchange Rate'
-                                        }
-                                    }
-                                },
-                                plugins: {
-                                    title: {
-                                        display: true,
-                                        text: 'Exchange Rate Trend by Currency'
-                                    },
-                                    tooltip: {
+                                options: {
+                                    responsive: true,
+                                    interaction: {
                                         mode: 'index',
-                                        intersect: false
+                                        intersect: true
                                     },
-                                    legend: {
-                                        position: 'bottom'
+                                    scales: {
+                                        x: {
+                                            display: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Dates'
+                                            }
+                                        },
+                                        y: {
+                                            display: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Exchange Rate'
+                                            }
+                                        }
+                                    },
+                                    plugins: {
+                                        title: {
+                                            display: true,
+                                            text: 'Exchange Rate Trend by Currency'
+                                        },
+                                        tooltip: {
+                                            mode: 'index',
+                                            intersect: false
+                                        },
+                                        legend: {
+                                            position: 'bottom'
+                                        }
                                     }
                                 }
-                            }
-                        };
+                            };
 
-                        var myChart = new Chart(
-                            document.getElementById('myChart'),
-                            config
-                        );
-                    </script>
+                            var myChart1 = new Chart(
+                                document.getElementById('myChart1'),
+                                config1
+                            );
+                        </script>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <canvas id="myChart2" height="400"></canvas>
+                        <script type="text/javascript">
+                            var currencyData3 = <?php echo json_encode($selectedCurrencies3); ?>;
+                            var currencyData4 = <?php echo json_encode($selectedCurrencies4); ?>;
+                            var datasets2 = [];
+
+                            for (var currency in currencyData3) {
+                                var data = currencyData3[currency];
+                                var rates = data.map(function (item) {
+                                    return item.rate;
+                                });
+                                var labels = data.map(function (item) {
+                                    return item.datetime;
+                                });
+
+                                datasets2.push({
+                                    label: currency,
+                                    backgroundColor: 'rgb(23, 99, 132)',
+                                    borderColor: 'rgb(23, 99, 132)',
+                                    data: rates
+                                });
+                            }
+
+                            for (var currency in currencyData4) {
+                                var data = currencyData4[currency];
+                                var rates = data.map(function (item) {
+                                    return item.rate;
+                                });
+                                var labels = data.map(function (item) {
+                                    return item.datetime;
+                                });
+
+                                datasets2.push({
+                                    label: currency,
+                                    backgroundColor: 'rgb(100, 99, 132)',
+                                    borderColor: 'rgb(100, 99, 132)',
+                                    data: rates
+                                });
+                            }
+
+                            var config2 = {
+                                type: 'line',
+                                data: {
+                                    labels: labels,
+                                    datasets: datasets2
+                                },
+                                options: {
+                                    responsive: true,
+                                    interaction: {
+                                        mode: 'index',
+                                        intersect: true
+                                    },
+                                    scales: {
+                                        x: {
+                                            display: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Dates'
+                                            }
+                                        },
+                                        y: {
+                                            display: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Exchange Rate'
+                                            }
+                                        }
+                                    },
+                                    plugins: {
+                                        title: {
+                                            display: true,
+                                            text: 'Exchange Rate Trend by Currency'
+                                        },
+                                        tooltip: {
+                                            mode: 'index',
+                                            intersect: false
+                                        },
+                                        legend: {
+                                            position: 'bottom'
+                                        }
+                                    }
+                                }
+                            };
+
+                            var myChart2 = new Chart(
+                                document.getElementById('myChart2'),
+                                config2
+                            );
+                        </script>
+                    </div>
                 </div>
             </div>
         </div>
